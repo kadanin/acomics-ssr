@@ -2,17 +2,21 @@
 
 namespace Acomics\Ssr\Script;
 
+use Acomics\Ssr\Root;
+
 class Build
 {
 	private const LAYOUTS_DIR = 'src/Layout';
 	private const COMPONENTS_DIR = 'Component';
 	private const BUNDLE_DIR = 'static/bundle';
-	private const HASHES_FILENAME = 'src/hashes.generated.php';
+	private const HASHES_TEMPLATE = 'templates/HashesGenerated.txt';
+	private const HASHES_FILENAME = 'src/HashesGenerated.php';
 
 	private static function createBundleDirectory(): void
 	{
-        if (!@\mkdir(self::BUNDLE_DIR, 0777, true) && !\is_dir(self::BUNDLE_DIR)) {
-            throw new \RuntimeException('Directory "' . self::BUNDLE_DIR . '" was not created');
+        $bundleDir = self::bundleDir();
+        if (!@\mkdir($bundleDir, 0777, true) && !\is_dir($bundleDir)) {
+            throw new \RuntimeException("Directory \"{$bundleDir}\" was not created");
         }
 	}
 
@@ -144,19 +148,14 @@ class Build
 
 	private static function calculateHashes(array $bundleFilenames): void
 	{
-		$content = '<?php' . PHP_EOL . PHP_EOL;
-		$content .= '// Этот файл сгенерирован автоматически. Не изменять вручную.' . PHP_EOL . PHP_EOL;
-
-		$content .= 'global $hashes;' . PHP_EOL;
-		$content .= '$hashes = array(' . PHP_EOL;
+		$content = '';
 		foreach ($bundleFilenames as $bundleFilename) {
-			$hash = md5_file($bundleFilename);
+			$hash = \md5_file($bundleFilename);
 			echo $bundleFilename . ' => ' . $hash . PHP_EOL;
-			$content .= '  \'' . $bundleFilename . '\' => \'' . $hash . '\',' . PHP_EOL;
+			$content .= '            \'' . $bundleFilename . '\' => \'' . $hash . '\',' . PHP_EOL;
 		}
-		$content .= ');' . PHP_EOL;
 
-		file_put_contents(self::HASHES_FILENAME, $content);
+		\file_put_contents(self::hashesFilename(), \str_replace('{list}', $content, \file_get_contents(self::hashesTemplate())));
 	}
 
 	public static function run(): void
@@ -173,7 +172,7 @@ class Build
 			static::createBundleDirectory();
 		}
 
-		$bundleFilenames = array();
+		$bundleFilenames = [];
 
 		foreach ($layouts as $layout) {
 			echo 'Building bundles for layout: ' . $layout . PHP_EOL;
@@ -187,4 +186,17 @@ class Build
 
 		echo 'Done' . PHP_EOL;
 	}
+
+    private static function bundleDir(): string
+    {
+        return Root::dir() . '/' . self::BUNDLE_DIR;
+    }
+    private static function hashesFilename(): string
+    {
+        return Root::dir() . '/' . self::HASHES_FILENAME;
+    }
+    private static function hashesTemplate(): string
+    {
+        return Root::dir() . '/' . self::HASHES_TEMPLATE;
+    }
 }

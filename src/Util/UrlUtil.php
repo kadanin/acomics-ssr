@@ -2,9 +2,8 @@
 
 namespace Acomics\Ssr\Util;
 
+use Acomics\Ssr\HashesGenerated;
 use Acomics\Ssr\Layout\Common\AuthData;
-
-require_once __DIR__ . '/../hashes.generated.php';
 
 class UrlUtil
 {
@@ -36,7 +35,6 @@ class UrlUtil
 
 	public static function makeStaticUrlWithHash(string $staticPath): string
 	{
-		global $hashes;
-		return '/' . $staticPath . '?' . $hashes[$staticPath];
+		return '/' . $staticPath . '?' . HashesGenerated::getHash($staticPath);
 	}
 }

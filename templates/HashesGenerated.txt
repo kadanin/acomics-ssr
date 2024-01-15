@@ -1,0 +1,20 @@
+<?php
+
+namespace Acomics\Ssr;
+
+/**
+ * Этот файл сгенерирован автоматически. Не изменять вручную.
+ */
+class HashesGenerated
+{
+    public static function getHash(string $staticPath): string
+    {
+        return static::getList()[$staticPath] ?? '';
+    }
+
+    public static function getList(): array
+    {
+        return [
+{list}        ];
+    }
+}
