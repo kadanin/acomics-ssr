@@ -11,9 +11,9 @@ class Build
 
 	private static function createBundleDirectory(): void
 	{
-		if (!file_exists(self::BUNDLE_DIR)) {
-			mkdir(self::BUNDLE_DIR, 0777, true);
-		}
+        if (!@\mkdir(self::BUNDLE_DIR, 0777, true) && !\is_dir(self::BUNDLE_DIR)) {
+            throw new \RuntimeException('Directory "' . self::BUNDLE_DIR . '" was not created');
+        }
 	}
 
 	private static function getLayouts(): array
