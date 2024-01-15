@@ -23,15 +23,12 @@ class UrlUtil
 
 	public static function makeSubscriptionsUrl(AuthData $auth): string
 	{
-		if (!$auth->isLoggedIn)
-		{
+		if (!$auth->isLoggedIn) {
 			return self::DEFAULT_SUBSCRIPTIONS_URL;
 		}
-		else
-		{
-			return self::makeProfileUrl($auth->username, 'list2');
-		}
-	}
+
+        return self::makeProfileUrl($auth->username, 'list2');
+    }
 
 	public static function makeStaticUrlWithHash(string $staticPath): string
 	{
